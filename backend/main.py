@@ -1,4 +1,5 @@
 import asyncio
+import os
 from pathlib import Path
 import random
 import dotenv
@@ -8,7 +9,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from sqlmodel import Session
 
-from db import get_session, init_db
+from db import init_db
 from router import router as paste_router
 
 dotenv.load_dotenv()
@@ -25,11 +26,10 @@ app.add_middleware(  # todo: настроить cors
 
 app.include_router(paste_router, prefix="/pastes", tags=["Pastes"])
 
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
-
-@app.exception_handler(404)
-def redirect_to_index(request: Request, exc: HTTPException):
-    return FileResponse("static/index.html")
+# app.mount("/", StaticFiles(directory="static", html=True), name="static")
+# @app.exception_handler(404)
+# def redirect_to_index(request: Request, exc: HTTPException):
+#     return FileResponse("static/index.html")
 
 
 @app.on_event("startup")
@@ -39,5 +39,7 @@ def on_startup():
 
 @app.middleware("http")
 async def emulate_latency(request: Request, call_next):
+    if os.environ.get("PRODUCTION", '') == "true" : return
+    
     await asyncio.sleep(1 + 1 * random.random())
     return await call_next(request)
