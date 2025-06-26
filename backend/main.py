@@ -37,9 +37,9 @@ def on_startup():
     init_db()
 
 
-@app.middleware("http")
-async def emulate_latency(request: Request, call_next):
-    if os.environ.get("PRODUCTION", '') == "true" : return
-    
-    await asyncio.sleep(1 + 1 * random.random())
-    return await call_next(request)
+# эмуляция задержки
+if os.environ.get("PRODUCTION", '') == "false" :
+    @app.middleware("http")
+    async def emulate_latency(request: Request, call_next):
+        await asyncio.sleep(1 + 1 * random.random())
+        return await call_next(request)
