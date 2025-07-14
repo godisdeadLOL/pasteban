@@ -1,24 +1,33 @@
 # PasteBan
-Простой клон [Pastebin.com](Pastebin.com). 
+Простой клон [Pastebin.com](https://pastebin.com). 
 
 ***
 
 ## 🚀 Демо
 🔗 [Открыть сайт](https://godisdeadlol.github.io/pasteban)
 
-## ✨ Особенности
+## ✨ Возможности
 
+- 🔓 Публичные и приватные файлы
+- 🔗 Доступ по прямой ссылке
+- 📜 Поддержка синтаксической подсветки (todo)
 
-## 🛠 Технологии
+## 🛠 Стек технологий
 
 ### Фронтенд
-[![Preact](https://img.shields.io/badge/Preact-673AB7?style=for-the-badge&logo=preact&logoColor=white)](https://preactjs.com/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Chakra UI](https://img.shields.io/badge/Chakra_UI-319795?style=for-the-badge&logo=chakraui&logoColor=white)](https://chakra-ui.com/)
-[![React Router](https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white)](https://reactrouter.com/)
-[![React Query](https://img.shields.io/badge/React_Query-FF4154?style=for-the-badge&logo=react-query&logoColor=white)](https://tanstack.com/query)
+
+- [TypeScript](https://www.typescriptlang.org/)
+- [Preact](https://preactjs.com/)
+- [Chakra UI](https://chakra-ui.com/) — UI-фреймворк
+- [React Router](https://reactrouter.com/) — маршрутизация
+- [React Query](https://tanstack.com/query) — управление состоянием запросов
+
+### Бэкенд
+
+- [Python]()
+- [FastAPI](https://fastapi.tiangolo.com/) — бекенд Python-фреймворк
+- [SQLModel](https://sqlmodel.tiangolo.com/) — ORM на базе SQLAlchemy и Pydantic
 
 
-## Бекенд
-[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+## 🔐 API
+🔗 [Открыть Swagger](https://godisdeadlol.github.io/pasteban)
