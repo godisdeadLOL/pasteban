@@ -4,10 +4,12 @@ import { ColorModeButton } from "@/components/ui/color-mode"
 import { AdaptiveButton } from "@/components/AdaptiveButton"
 import { BrowserRouter, Route, Routes, useNavigate } from "react-router"
 
-import { PasteShow } from "@/PasteShow"
-import { PasteList } from "@/PasteList"
-import { PasteCreate } from "@/PasteCreate"
-import { Toaster } from "./components/ui/toaster"
+import { PasteShow } from "@/pages/PasteShow"
+import { PasteList } from "@/pages/PasteList"
+import { PasteCreate } from "@/pages/PasteCreate"
+
+import { Toaster } from "@/components/ui/toaster"
+import { Auth } from "@/pages/Auth"
 
 const NavBar = () => {
 	const navigate = useNavigate()
@@ -33,18 +35,17 @@ export const App = () => {
 	return (
 		<>
 			<Toaster />
-			<BrowserRouter basename={import.meta.env.VITE_BASE_NAME}>
+			<BrowserRouter basename={import.meta.env.BASE_URL}>
 				<Flex direction={"column"} minH={"100dvh"}>
 					<NavBar />
 
-					<Container py={4} flexGrow={1} asChild>
-						<Stack gap={4}>
-							<Routes>
-								<Route path="" element={<PasteList />} />
-								<Route path="/create" element={<PasteCreate />} />
-								<Route path="/:url" element={<PasteShow />} />
-							</Routes>
-						</Stack>
+					<Container maxW="3xl" py={4} flexGrow={1}>
+						<Routes>
+							<Route path="" element={<PasteList />} />
+							<Route path="/auth" element={<Auth />} />
+							<Route path="/create" element={<PasteCreate />} />
+							<Route path="/:url" element={<PasteShow />} />
+						</Routes>
 					</Container>
 				</Flex>
 			</BrowserRouter>

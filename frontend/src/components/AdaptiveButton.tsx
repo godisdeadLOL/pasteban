@@ -1,4 +1,5 @@
-import { Button, IconButton } from "@chakra-ui/react"
+import { Button, IconButton, Skeleton } from "@chakra-ui/react"
+import { Link } from "react-router"
 
 export const AdaptiveButton = ({ label, icon, onClick = null }: any) => {
 	return (
@@ -18,16 +19,20 @@ export const AdaptiveLinkButton = ({ label, icon, href = null, download = null }
 	return (
 		<>
 			<Button display={{ base: "none", md: "flex" }} size="xs" variant="outline" asChild>
-				<a href={href} download={download}>
+				<Link to={href} download={download}>
 					{icon} {label}
-				</a>
+				</Link>
 			</Button>
 
 			<IconButton display={{ md: "none" }} variant="outline" asChild>
-				<a href={href} download={download}>
+				<Link to={href} download={download}>
 					{icon}
-				</a>
+				</Link>
 			</IconButton>
 		</>
 	)
+}
+
+export const ButtonSkeleton = () => {
+	return <Skeleton h={{ base: 10, md: 7 }} w={{ base: 10, md: 28 }} />
 }

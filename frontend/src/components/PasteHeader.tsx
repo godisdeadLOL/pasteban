@@ -1,8 +1,21 @@
 import { PasteOverview, PastePublic } from "@/schemas"
 import { copyToClipboard, formatDateTime } from "@/utils"
-import { Stack, Text, Group, IconButton, HStack, Link } from "@chakra-ui/react"
+import { Stack, Text, Group, IconButton, HStack, Link, Skeleton } from "@chakra-ui/react"
 import { LuCopy, LuClock, LuShield } from "react-icons/lu"
 import { useNavigate } from "react-router"
+
+export const PasteHeaderSkeleton = () => {
+	return <Stack gap={2} py={2}>
+
+		<Stack gap={2} sm={{ flexDirection: "row" }}>
+			<Skeleton h={4} w={24} />
+			<Skeleton h={4} w={16} />
+		</Stack>
+
+		<Skeleton h={3} w="full" />
+
+	</Stack>
+}
 
 type PasteHeaderProps = {
 	data: PasteOverview | PastePublic

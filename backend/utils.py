@@ -1,4 +1,6 @@
 import hashlib
+import os
+from typing import Optional
 import zlib
 import base64
 import urllib.parse
@@ -17,8 +19,10 @@ def decode_base64(encoded: str):
 def generate_hash(text: str):
     return hashlib.sha256(text.encode()).hexdigest()
 
-def generate_query(title : str):
-    return title.lower().replace(' ', '')
+
+def generate_query(title: str):
+    return title.lower().replace(" ", "")
+
 
 languages = {
     "python": "python",
@@ -62,3 +66,26 @@ def guess_language(code: str):
         return languages[result]
     except:
         return "text"
+
+
+def check_read_access(paste_key_hash: Optional[str], key: Optional[str]):
+    if not paste_key_hash:
+        return True
+
+    if key == os.environ["TOKEN"]:
+        return True
+
+    if not key:
+        return False
+
+    return generate_hash(key) == paste_key_hash
+
+
+def check_delete_access(paste_key_hash: Optional[str], key: Optional[str]):
+    if key == os.environ["TOKEN"]:
+        return True
+    
+    if not paste_key_hash or not key:
+        return False
+
+    return generate_hash(key) == paste_key_hash

@@ -1,7 +1,7 @@
 import { Button, Field, Fieldset, Heading, Input, Text, Textarea } from "@chakra-ui/react"
-import { PasswordInput } from "./components/ui/password-input"
+import { PasswordInput } from "@/components/ui/password-input"
 import { useForm } from "react-hook-form"
-import { PasteCreateRequest, PastePublic } from "./schemas"
+import { PasteCreateRequest, PastePublic } from "@/schemas"
 import { useMutation } from "@tanstack/react-query"
 import { useNavigate } from "react-router"
 
@@ -10,8 +10,15 @@ import { useEffect, useState } from "preact/hooks"
 import { displayToasterMessage, handleResponse } from "@/utils"
 
 export const PasteCreate = () => {
-	const navigate = useNavigate()
+	useEffect(() => {
+		document.title = "Создание файла"
+	}, [])
 
+	const { register, handleSubmit, watch, formState: { errors } } = useForm<PasteCreateRequest>()
+	const content = watch("content")
+	const key = watch("key")
+
+	const navigate = useNavigate()
 	const mutation = useMutation({
 		mutationFn: (data: PasteCreateRequest) => {
 			return fetch(`${import.meta.env.VITE_API_URL}/pastes`, {
@@ -26,6 +33,8 @@ export const PasteCreate = () => {
 
 		onMutate: () => displayToasterMessage("Создание файла...", "info"),
 		onSuccess: (data: PastePublic) => {
+			if (key) localStorage.setItem(`key_${data.url}`, key)
+
 			displayToasterMessage("Файл успешно создан", "success")
 			navigate(`/${data.url}`)
 		},
@@ -38,20 +47,9 @@ export const PasteCreate = () => {
 		},
 	})
 
-	useEffect(() => {
-		document.title = "Создание файла"
-	}, [])
-
-	const {
-		register,
-		handleSubmit,
-		watch,
-		formState: { errors },
-	} = useForm<PasteCreateRequest>()
-	const onSubmit = (data: any) => mutation.mutate(data)
-
-	const content = watch("content")
 	const [captcha, setCaptcha] = useState<string | null>(null)
+
+	const onSubmit = (data: any) => mutation.mutate(data)
 
 	return (
 		<form onSubmit={handleSubmit(onSubmit)}>
@@ -79,15 +77,14 @@ export const PasteCreate = () => {
 							{content ? content.length : 0}/10000
 						</Text>
 					</Field.Label>
+
 					<Textarea
 						{...register("content", {
 							required: "Поле не должно быть пустым",
 							maxLength: { value: 10000, message: "Слишком много текста" },
-						})}
-						minH={24}
-						maxH={96}
-						autoresize
+						})} minH={24} maxH={96} autoresize
 					/>
+
 					<Field.ErrorText>{errors.content?.message}</Field.ErrorText>
 				</Field.Root>
 
@@ -99,7 +96,7 @@ export const PasteCreate = () => {
 
 				<ReCAPTCHA sitekey={import.meta.env.VITE_CATPCHA_SITE_KEY} onChange={setCaptcha} />
 
-				<Button disabled={!captcha} onSubmit={(data) => alert(data)} mt={12} type="submit" variant={"outline"}>
+				<Button disabled={!captcha} loading={mutation.isPending} onSubmit={(data) => alert(data)} mt={12} type="submit" variant={"outline"}>
 					Создать
 				</Button>
 			</Fieldset.Root>

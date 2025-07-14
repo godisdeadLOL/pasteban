@@ -9,5 +9,5 @@ export default defineConfig({
       '@': '/src',
     },
   },
-  base: "/pasteban",
+  base: "/pasteban/",
 })
