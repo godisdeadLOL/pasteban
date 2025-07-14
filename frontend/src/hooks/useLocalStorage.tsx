@@ -1,15 +1,13 @@
 import { useEffect, useState } from "preact/hooks"
 
 export const useLocalStorage = (key: string, defaultValue: string | undefined = undefined) => {
-    const [value, setValue] = useState(() => {
-        return localStorage.getItem(key) ?? defaultValue
-    })
+    const [value, setValue] = useState(() => localStorage.getItem(key) ?? defaultValue)
 
     useEffect(() => {
         if (!value) localStorage.removeItem(key)
         else localStorage.setItem(key, value)
 
-        window.dispatchEvent(new CustomEvent('local-storage', { detail: { key, value } }));
+        window.dispatchEvent(new CustomEvent('local-storage', { detail: { key, value: value ?? undefined } }));
     }, [value])
 
     useEffect(() => {
@@ -20,6 +18,8 @@ export const useLocalStorage = (key: string, defaultValue: string | undefined = 
 
                 if (!value) localStorage.removeItem(key)
                 else localStorage.setItem(key, value)
+
+                setValue(value ?? undefined)
             }
         };
 

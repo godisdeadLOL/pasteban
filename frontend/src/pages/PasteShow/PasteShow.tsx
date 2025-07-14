@@ -57,21 +57,19 @@ const KeyDialogue = ({ open, setOpen, onApply, onCancel }: any) => {
 }
 
 export const PasteShow = () => {
-	const { url } = useParams()
-	const navigate = useNavigate()
-
-	const [dialogueOpen, setDialogueOpen] = useState(false)
-
-	const [key, setKey] = useLocalStorage(`key_${url}`)
-	const accessKey = usePasteAccessKey(url!)
-
-
 	const queryClient = useQueryClient()
 	useEffect(() => {
 		queryClient.removeQueries({ queryKey: ["paste_show"] })
 	}, [])
 
-	const { data } = useQuery<PastePublic>({
+	const { url } = useParams()
+	const navigate = useNavigate()
+	const [dialogueOpen, setDialogueOpen] = useState(false)
+
+	const [key, setKey] = useLocalStorage(`key_${url!}`)
+	const accessKey = usePasteAccessKey(url!)
+
+	const { data, refetch } = useQuery<PastePublic>({
 		queryKey: ["paste_show"],
 		queryFn: () =>
 			fetch(`${import.meta.env.VITE_API_URL}/pastes/${url}`, {
@@ -84,20 +82,24 @@ export const PasteShow = () => {
 				}
 			}),
 		retry: (failureCount, error) => {
-			if (error.message.indexOf("Unauthorized") != -1) return false
+			if (error.message.indexOf("Unauthorized") !== -1) return false
 			else if (failureCount == 3) return false
 			else return true
 		},
+		enabled: false
 	})
+	useEffect(() => {
+		refetch()
+	}, [accessKey])
+
 
 	useEffect(() => {
 		if (!!data) document.title = data.title
 	}, [data])
 
 	const onDialogueApply = (value: string) => {
-		if (!!value) sessionStorage.setItem(url!, value)
+		setKey(value ?? undefined)
 		if (key === value) setDialogueOpen(true)
-		else setKey(value)
 	}
 
 	const generateFileBlobUrl = (content: string) => {
