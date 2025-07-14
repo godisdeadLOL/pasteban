@@ -2,7 +2,7 @@ import { Box, Container, Flex, Link, Stack } from "@chakra-ui/react"
 import { LuPlus, LuSearch } from "react-icons/lu"
 import { ColorModeButton } from "@/components/ui/color-mode"
 import { AdaptiveButton } from "@/components/AdaptiveButton"
-import { BrowserRouter, Route, Routes, useNavigate } from "react-router"
+import { BrowserRouter, HashRouter, Route, Routes, useNavigate } from "react-router"
 
 import { PasteShow } from "@/pages/PasteShow"
 import { PasteList } from "@/pages/PasteList"
@@ -35,20 +35,21 @@ export const App = () => {
 	return (
 		<>
 			<Toaster />
-			<BrowserRouter basename={import.meta.env.BASE_URL}>
+			{/* basename={import.meta.env.BASE_URL} */}
+			<HashRouter>
 				<Flex direction={"column"} minH={"100dvh"}>
 					<NavBar />
 
 					<Container maxW="3xl" py={4} flexGrow={1}>
 						<Routes>
-							<Route path="" element={<PasteList />} />
+							<Route path="/" element={<PasteList />} />
 							<Route path="/auth" element={<Auth />} />
 							<Route path="/create" element={<PasteCreate />} />
 							<Route path="/:url" element={<PasteShow />} />
 						</Routes>
 					</Container>
 				</Flex>
-			</BrowserRouter>
+			</HashRouter>
 		</>
 	)
 }
