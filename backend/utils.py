@@ -4,7 +4,9 @@ from typing import Optional
 import zlib
 import base64
 import urllib.parse
-from whats_that_code.election import guess_language_all_methods
+
+from models import Paste
+from schemas import PastePublic
 
 
 def convert_id_to_url(id: int):
@@ -24,52 +26,8 @@ def generate_query(title: str):
     return title.lower().replace(" ", "")
 
 
-languages = {
-    "python": "python",
-    "java": "java",
-    "javascript": "javascript",
-    "c#": "csharp",
-    "c++": "cpp",
-    "php": "php",
-    "r": "r",
-    "objectivec": "objectivec",
-    "swift": "swift",
-    "typescript": "typescript",
-    "matlab": "matlab",
-    "kotlin": "kotlin",
-    "go": "go",
-    "ruby": "ruby",
-    "rust": "rust",
-    "scala": "scala",
-    "vbnet": "vbnet",
-    "lua": "lua",
-    "ada": "ada",
-    "dart": "dart",
-    "abap": "abap",
-    "perl": "perl",
-    "julia": "julia",
-    "groovy": "groovy",
-    "haskell": "haskell",
-    "delphi": "delphi",
-    "cobol": "text",
-    "vba": "text",
-}
-
-
-def guess_language(code: str):
-    result = guess_language_all_methods(code)
-
-    if result is None:
-        return "text"
-
-    try:
-        return languages[result]
-    except:
-        return "text"
-
-
-def check_read_access(paste_key_hash: Optional[str], key: Optional[str]):
-    if not paste_key_hash:
+def check_read_access(paste: Paste, key: Optional[str]):
+    if not paste.key_hash:
         return True
 
     if key == os.environ["TOKEN"]:
@@ -78,14 +36,28 @@ def check_read_access(paste_key_hash: Optional[str], key: Optional[str]):
     if not key:
         return False
 
-    return generate_hash(key) == paste_key_hash
+    return generate_hash(key) == paste.key_hash
 
 
-def check_delete_access(paste_key_hash: Optional[str], key: Optional[str]):
+def check_delete_access(paste: Paste, key: Optional[str]):
     if key == os.environ["TOKEN"]:
         return True
     
-    if not paste_key_hash or not key:
+    if not paste.deletable : return False
+
+    if not paste.key_hash or not key:
         return False
 
-    return generate_hash(key) == paste_key_hash
+    return generate_hash(key) == paste.key_hash
+
+
+def check_update_access(paste: Paste, key: Optional[str]):
+    if key == os.environ["TOKEN"]:
+        return True
+    
+    if not paste.updatable : return False
+
+    if not paste.key_hash or not key:
+        return False
+
+    return generate_hash(key) == paste.key_hash

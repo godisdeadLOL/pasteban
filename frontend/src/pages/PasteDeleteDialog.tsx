@@ -6,12 +6,12 @@ import { Button, CloseButton, Dialog, Kbd } from "@chakra-ui/react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "react-router"
 
-type PasteDeleteDialogueProps = {
+type PasteDeleteDialogProps = {
     pasteData: PastePublic | PasteOverview
     children: any
 }
 
-export const PasteDeleteDialogue = ({ pasteData, children }: PasteDeleteDialogueProps) => {
+export const PasteDeleteDialog = ({ pasteData, children }: PasteDeleteDialogProps) => {
     const accessKey = usePasteAccessKey(pasteData.url)
 
     const queryClient = useQueryClient()
@@ -41,7 +41,7 @@ export const PasteDeleteDialogue = ({ pasteData, children }: PasteDeleteDialogue
 
     const pending = mutation.isPending
 
-    return <Dialog.Root>
+    return <Dialog.Root unmountOnExit={true} lazyMount={true}>
         <Dialog.Trigger asChild>{children}</Dialog.Trigger>
 
         <Dialog.Backdrop />

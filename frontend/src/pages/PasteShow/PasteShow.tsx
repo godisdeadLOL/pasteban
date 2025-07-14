@@ -1,5 +1,5 @@
-import { Box, Button, CloseButton, Dialog, Flex, Portal, Stack } from "@chakra-ui/react"
-import { LuCopy, LuDownload, LuShare, LuTrash } from "react-icons/lu"
+import { Box, Button, CloseButton, Dialog, Flex, Portal, Stack, Wrap } from "@chakra-ui/react"
+import { LuCopy, LuDownload, LuPen, LuShare, LuTrash } from "react-icons/lu"
 import { useColorModeValue } from "@/components/ui/color-mode"
 import { CodeBlock, tomorrow, tomorrowNightBright } from "react-code-blocks"
 import { AdaptiveButton, AdaptiveLinkButton } from "@/components/AdaptiveButton"
@@ -13,10 +13,11 @@ import { copyToClipboard, encodeBase64 } from "@/utils"
 import { PastePublic } from "@/schemas"
 import { PasteShowSkeleton } from "@/pages/PasteShow/PasteShowSkeleton"
 import { useLocalStorage } from "@/hooks/useLocalStorage"
-import { PasteDeleteDialogue } from "@/pages/PasteDeleteDialogue"
+import { PasteDeleteDialog } from "@/pages/PasteDeleteDialog"
 import { usePasteAccessKey } from "@/hooks/usePasteAccessKey"
+import { PasteUpdateDialog } from "@/pages/PasteUpdateDialog"
 
-const KeyDialogue = ({ open, setOpen, onApply, onCancel }: any) => {
+const KeyDialog = ({ open, setOpen, onApply, onCancel }: any) => {
 	const [value, setValue] = useState("")
 
 	const onOpenChange = (e: any) => {
@@ -109,21 +110,30 @@ export const PasteShow = () => {
 
 	return (
 		<>
-			<KeyDialogue open={dialogueOpen} setOpen={setDialogueOpen} onApply={onDialogueApply} onCancel={() => navigate("/")} key={key} setKey={setKey} />
+			<KeyDialog open={dialogueOpen} setOpen={setDialogueOpen} onApply={onDialogueApply} onCancel={() => navigate("/")} key={key} setKey={setKey} />
 
 			{!data && <PasteShowSkeleton />}
 
 			{data && <>
 				<Flex alignItems={"center"} gap={{ base: 2, sm: 4 }}>
-					<PasteHeader data={data} />
+					<PasteHeader pasteData={data} />
 
 					<Box mx="auto" />
 
 					{/* Действия */}
-					{key && <PasteDeleteDialogue pasteData={data}><AdaptiveButton colorPallete="red" label="Удалить" icon={<LuTrash />} /></PasteDeleteDialogue>}
-					<AdaptiveButton onClick={() => copyToClipboard(document.URL, "Ссылка скопирована")} label="Поделиться" icon={<LuShare />} />
-					<AdaptiveButton onClick={() => copyToClipboard(data.content, "Текст скопирован")} icon={<LuCopy />} label="Копировать" />
-					<AdaptiveLinkButton download={`${data.title}.txt`} href={generateFileBlobUrl(data.content)} icon={<LuDownload />} label="Скачать" />
+					<Wrap justifyContent="right">
+						{accessKey && data.deletable && <PasteDeleteDialog pasteData={data}>
+							<AdaptiveButton colorPalette="red" label="Удалить" icon={<LuTrash />} />
+						</PasteDeleteDialog>}
+
+						{accessKey && data.updatable && <PasteUpdateDialog pasteData={data}>
+							<AdaptiveButton label="Редактировать" icon={<LuPen />} />
+						</PasteUpdateDialog>}
+
+						<AdaptiveButton onClick={() => copyToClipboard(document.URL, "Ссылка скопирована")} label="Поделиться" icon={<LuShare />} />
+						<AdaptiveButton onClick={() => copyToClipboard(data.content, "Текст скопирован")} icon={<LuCopy />} label="Копировать" />
+						<AdaptiveLinkButton download={`${data.title}.txt`} href={generateFileBlobUrl(data.content)} icon={<LuDownload />} label="Скачать" />
+					</Wrap>
 				</Flex>
 
 				<Box fontFamily={"monospace"} mt={4}>
@@ -131,7 +141,6 @@ export const PasteShow = () => {
 						customStyle={{ borderWidth: "1px", borderColor: "border", borderStyle: "solid" }}
 						theme={useColorModeValue(tomorrow, tomorrowNightBright)}
 						text={data.content}
-						language={data.language}
 						showLineNumbers={true}
 					/>
 				</Box>

@@ -50,5 +50,8 @@ export const displayToasterMessage = (message: string, type: "success" | "error"
 
 export const handleResponse = (response: Response) => {
 	if (response.ok) return response.json()
-	else return Promise.reject(new Error(`${response.status}: ${response.statusText}`))
+	else {
+		displayToasterMessage(`Ошибка запроса: ${response.status}`, "error")
+		return Promise.reject(new Error(`${response.status}: ${response.statusText}`))
+	}
 }

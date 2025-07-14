@@ -1,7 +1,7 @@
 import { AdaptiveButton, AdaptiveLinkButton } from "@/components/AdaptiveButton"
 import { PasteHeader } from "@/components/PasteHeader"
 import { usePasteAccessKey } from "@/hooks/usePasteAccessKey"
-import { PasteDeleteDialogue } from "@/pages/PasteDeleteDialogue"
+import { PasteDeleteDialog } from "@/pages/PasteDeleteDialog"
 import { PasteWrapper } from "@/pages/PasteList/PasteWrapper"
 import { PasteOverview } from "@/schemas"
 import { Box } from "@chakra-ui/react"
@@ -21,11 +21,11 @@ export const PasteEntry = ({ index, data }: PasteEntry) => {
                 {index}.
             </Box>
 
-            <PasteHeader data={data} />
+            <PasteHeader pasteData={data} />
 
             <Box mx={"auto"} />
 
-            {accessKey && <PasteDeleteDialogue pasteData={data}><AdaptiveButton colorPallete="red" label="Удалить" icon={<LuTrash />} /></PasteDeleteDialogue>}
+            {accessKey && data.deletable && <PasteDeleteDialog pasteData={data}><AdaptiveButton colorPallete="red" label="Удалить" icon={<LuTrash />} /></PasteDeleteDialog>}
             <AdaptiveLinkButton href={`/${data.url}`} label="Подробнее" icon={<LuArrowRight />} />
         </PasteWrapper>
     )

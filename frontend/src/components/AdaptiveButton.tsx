@@ -1,30 +1,30 @@
 import { Button, IconButton, Skeleton } from "@chakra-ui/react"
 import { Link } from "react-router"
 
-export const AdaptiveButton = ({ label, icon, onClick = null }: any) => {
+export const AdaptiveButton = ({ label, icon, variant="outline", onClick = null, ...other }: any) => {
 	return (
 		<>
-			<Button onClick={onClick} display={{ base: "none", md: "flex" }} size="xs" variant="outline">
+			<Button onClick={onClick} display={{ base: "none", md: "flex" }} size="xs" variant={variant} {...other}>
 				{icon} {label}
 			</Button>
 
-			<IconButton onClick={onClick} display={{ md: "none" }} variant="outline">
+			<IconButton onClick={onClick} display={{ md: "none" }} variant={variant} {...other}>
 				{icon}
 			</IconButton>
 		</>
 	)
 }
 
-export const AdaptiveLinkButton = ({ label, icon, href = null, download = null }: any) => {
+export const AdaptiveLinkButton = ({ label, icon, href = null, download = null, ...other }: any) => {
 	return (
 		<>
-			<Button display={{ base: "none", md: "flex" }} size="xs" variant="outline" asChild>
+			<Button display={{ base: "none", md: "flex" }} size="xs" variant="outline" asChild {...other}>
 				<Link to={href} download={download}>
 					{icon} {label}
 				</Link>
 			</Button>
 
-			<IconButton display={{ md: "none" }} variant="outline" asChild>
+			<IconButton display={{ md: "none" }} variant="outline" asChild {...other}>
 				<Link to={href} download={download}>
 					{icon}
 				</Link>

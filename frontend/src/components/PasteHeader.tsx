@@ -1,7 +1,8 @@
+import { usePasteAccessKey } from "@/hooks/usePasteAccessKey"
 import { PasteOverview, PastePublic } from "@/schemas"
 import { copyToClipboard, formatDateTime } from "@/utils"
-import { Stack, Text, Group, IconButton, HStack, Link, Skeleton } from "@chakra-ui/react"
-import { LuCopy, LuClock, LuShield } from "react-icons/lu"
+import { Box, Stack, Text, Group, IconButton, HStack, Link, Skeleton } from "@chakra-ui/react"
+import { LuCopy, LuClock, LuShield, LuKey } from "react-icons/lu"
 import { useNavigate } from "react-router"
 
 export const PasteHeaderSkeleton = () => {
@@ -18,25 +19,26 @@ export const PasteHeaderSkeleton = () => {
 }
 
 type PasteHeaderProps = {
-	data: PasteOverview | PastePublic
+	pasteData: PasteOverview | PastePublic
 }
 
-export const PasteHeader = ({ data }: PasteHeaderProps) => {
+export const PasteHeader = ({ pasteData }: PasteHeaderProps) => {
 	const navigate = useNavigate()
+	const accessKey = usePasteAccessKey(pasteData.url)
 
 	return (
 		<Stack gap={0}>
 			<Stack direction={{ base: "column", sm: "row" }} gap={{ base: 0, sm: 4 }} alignItems={{ base: "start", sm: "center" }}>
 				<Group>
-					<Link onClick={() => navigate(`/${data.url}`)}> {data.title} </Link>
-					{data.is_protected && <LuShield />}
+					<Link onClick={() => navigate(`/${pasteData.url}`)}> {pasteData.title} </Link>
+					{pasteData.is_protected && accessKey ? <LuKey /> : <LuShield />}
 				</Group>
 
 				<Group gap={1}>
 					<Text fontSize={"sm"} color={"GrayText"}>
-						{data.url}
+						{pasteData.url}
 					</Text>
-					<IconButton onClick={() => copyToClipboard(data.url, "Код скопирован")} rounded={"full"} variant="ghost" size="xs">
+					<IconButton onClick={() => copyToClipboard(pasteData.url, "Код скопирован")} rounded={"full"} variant="ghost" size="xs">
 						<LuCopy />
 					</IconButton>
 				</Group>
@@ -45,9 +47,9 @@ export const PasteHeader = ({ data }: PasteHeaderProps) => {
 			<HStack gap={2}>
 				<Group>
 					<LuClock color={"GrayText"} />
-					<Text color={"GrayText"} fontSize={"sm"}>
-						{formatDateTime(data.created_at)}
-					</Text>
+					<Box textWrap="nowrap" color={"GrayText"} fontSize={"sm"}>
+						{formatDateTime(pasteData.created_at)}
+					</Box>
 				</Group>
 			</HStack>
 		</Stack>

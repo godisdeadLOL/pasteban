@@ -9,8 +9,10 @@ class Paste(SQLModel, table=True):
 
     title: str
     content: str
-    language : str
-    
+
+    updatable: bool = Field(default=True)
+    deletable: bool = Field(default=True)
+
     query: str
 
     key_hash: Optional[str]

@@ -40,7 +40,7 @@ export const App = () => {
 				<Flex direction={"column"} minH={"100dvh"}>
 					<NavBar />
 
-					<Container maxW="3xl" py={4} flexGrow={1}>
+					<Container maxW="4xl" py={4} flexGrow={1}>
 						<Routes>
 							<Route path="/" element={<PasteList />} />
 							<Route path="/auth" element={<Auth />} />
