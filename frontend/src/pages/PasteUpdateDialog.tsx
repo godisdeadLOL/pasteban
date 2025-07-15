@@ -1,23 +1,28 @@
-import { Box, Button, CloseButton, Dialog, Field, Heading, Input, Kbd, Stack, Textarea } from "@chakra-ui/react"
-import { PasswordInput } from "@/components/ui/password-input"
+import { Box, Button, CloseButton, Dialog, Field, Input, NativeSelect, Stack, Textarea } from "@chakra-ui/react"
 import { useForm } from "react-hook-form"
-import { PasteCreateRequest, PastePublic, PasteUpdateRequest } from "@/schemas"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { data, useNavigate } from "react-router"
+import { PastePublic, PasteUpdateRequest } from "@/schemas"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
-import ReCAPTCHA from "react-google-recaptcha"
-import { useEffect, useState } from "preact/hooks"
+import { Dispatch, StateUpdater, useEffect, useState } from "preact/hooks"
 import { displayToasterMessage, encodeBase64, handleResponse } from "@/utils"
-import { contentOptions, keyOptions, titleOptions } from "@/formOptions"
+import { contentOptions, titleOptions } from "@/formOptions"
 import { usePasteAccessKey } from "@/hooks/usePasteAccessKey"
+import { languages } from "@/options"
 
 type PasteUpdateDialog = {
     pasteData: PastePublic
-    children: any
+    children?: any
+
+    open?: boolean
+    setOpen?: Dispatch<StateUpdater<boolean>>
 }
 
-export const PasteUpdateDialog = ({ pasteData, children }: PasteUpdateDialog) => {
-    const [open, setOpen] = useState(false)
+export const PasteUpdateDialog = ({ pasteData, open: controlledOpen = undefined, setOpen: setControlledOpen = undefined, children = undefined }: PasteUpdateDialog) => {
+    const [internalOpen, setInternalOpen] = useState(false)
+    const isControlled = controlledOpen !== undefined || setControlledOpen !== undefined
+
+    const open = isControlled ? controlledOpen! : internalOpen
+    const setOpen = isControlled ? setControlledOpen! : setInternalOpen
 
     const { register, handleSubmit, watch, formState: { errors }, setValue } = useForm<PasteUpdateRequest>()
     const content = watch("content")
@@ -25,6 +30,7 @@ export const PasteUpdateDialog = ({ pasteData, children }: PasteUpdateDialog) =>
     useEffect(() => {
         setValue("content", pasteData.content)
         setValue("title", pasteData.title)
+        setValue("language", pasteData.language)
     }, [])
 
     const accessKey = usePasteAccessKey(pasteData.url)
@@ -40,7 +46,8 @@ export const PasteUpdateDialog = ({ pasteData, children }: PasteUpdateDialog) =>
                 body: JSON.stringify(data),
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${encodeBase64(accessKey ?? "")}`
+                    Authorization: `Bearer ${encodeBase64(accessKey ?? "")}`,
+                    "Authorization-Format": "base64"
                 },
             }).then((res) => handleResponse(res))
         },
@@ -53,15 +60,14 @@ export const PasteUpdateDialog = ({ pasteData, children }: PasteUpdateDialog) =>
     })
 
     const onSubmit = (data: any) => mutation.mutate(data)
-
     const pending = mutation.isPending
 
     return <Dialog.Root unmountOnExit={true} lazyMount={true} open={open} onOpenChange={(details) => setOpen(details.open)}>
-        <Dialog.Trigger asChild>{children}</Dialog.Trigger>
+        {children && <Dialog.Trigger asChild>{children}</Dialog.Trigger>}
 
         <Dialog.Backdrop />
 
-        <Dialog.Positioner><Dialog.Content>
+        <Dialog.Positioner><Dialog.Content maxW="4xl">
 
             <Dialog.CloseTrigger disabled={pending} asChild><CloseButton size="sm" /></Dialog.CloseTrigger>
 
@@ -87,6 +93,17 @@ export const PasteUpdateDialog = ({ pasteData, children }: PasteUpdateDialog) =>
                         <Textarea {...register("content", contentOptions)} minH={24} maxH={96} autoresize />
 
                         <Field.ErrorText>{errors.content?.message}</Field.ErrorText>
+                    </Field.Root>
+
+                    <Field.Root disabled={pending}>
+                        <Field.Label>Синтаксис</Field.Label>
+
+                        <NativeSelect.Root>
+                            <NativeSelect.Field {...register("language")}>
+                                {languages.map((lang) => <option value={lang}>{lang}</option>)}
+                            </NativeSelect.Field>
+                            <NativeSelect.Indicator />
+                        </NativeSelect.Root>
                     </Field.Root>
 
                     <Button loading={mutation.isPending} mt={12} type="submit" variant="outline">

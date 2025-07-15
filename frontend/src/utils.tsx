@@ -12,20 +12,6 @@ export const copyToClipboard = (text: string, success: string) => {
 		.catch(() => toaster.error({ title: "Ошибка при копировании", duration: 2000 }))
 }
 
-export const formatDateTime = (timestamp: string) => {
-	const time = new Date(timestamp + "Z")
-
-	const options: any = {
-		year: "numeric",
-		month: "numeric",
-		day: "numeric",
-		hour: "2-digit",
-		minute: "2-digit",
-	}
-
-	return time.toLocaleString("ru-RU", options)
-}
-
 export const encodeBase64 = (text: string) => {
 	return window.btoa(unescape(encodeURIComponent(text)))
 }
@@ -54,4 +40,48 @@ export const handleResponse = (response: Response) => {
 		displayToasterMessage(`Ошибка запроса: ${response.status}`, "error")
 		return Promise.reject(new Error(`${response.status}: ${response.statusText}`))
 	}
+}
+
+export const pluralize = (n: number, one: string, few: string, many: string) => {
+	const mod10 = n % 10;
+	const mod100 = n % 100;
+	if (mod10 === 1 && mod100 !== 11) return one;
+	if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return few;
+	return many;
+}
+
+export const formatTimeAgo = (timestamp: string) => {
+	const time = new Date(timestamp + "Z")
+
+	const mseconds = new Date().getTime() - time.getTime();
+	const seconds = Math.ceil(mseconds / 1000);
+	const minutes = Math.ceil(seconds / 60);
+	const hours = Math.ceil(minutes / 60);
+	const days = Math.ceil(hours / 24);
+
+	if (seconds < 60) return 'только что';
+	else if (minutes < 60) return `${minutes} ${pluralize(minutes, 'минута', 'минуты', 'минут')} назад`
+	else if (hours < 24) return `${hours} ${pluralize(hours, 'час', 'часа', 'часов')} назад`
+	else if (days < 30) return `${days} ${pluralize(days, 'день', 'дня', 'дней')} назад`
+
+	const options: any = {
+		year: "numeric",
+		month: "numeric",
+		day: "numeric",
+		hour: "2-digit",
+		minute: "2-digit",
+	}
+
+	return time.toLocaleString("ru-RU", options)
+}
+
+export const formatTimeUntil = (seconds: number) => {
+	const minutes = Math.floor(seconds / 60);
+	const hours = Math.floor(minutes / 60);
+	const days = Math.floor(hours / 24);
+
+	if (seconds < 60) return `${seconds} ${pluralize(minutes, 'секунду', 'секунды', 'секунд')}`
+	else if (minutes < 60) return `${minutes} ${pluralize(minutes, 'минуту', 'минуты', 'минут')}`
+	else if (hours < 24) return `${hours} ${pluralize(hours, 'час', 'часа', 'часов')}`
+	else return `${days} ${pluralize(days, 'день', 'дня', 'дней')}`
 }

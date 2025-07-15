@@ -9,6 +9,18 @@ from models import Paste
 from schemas import PastePublic
 
 
+def parse_duration(duration: str):
+    units = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800}
+
+    unit = duration[-1]
+    if not unit in units:
+        raise ValueError()
+
+    value = int(duration[:-1])
+
+    return units[unit] * value
+
+
 def convert_id_to_url(id: int):
     hash = zlib.crc32(bytes(id)) & 0xFFFFFFFF
     return hex(hash)[2:]
@@ -42,8 +54,9 @@ def check_read_access(paste: Paste, key: Optional[str]):
 def check_delete_access(paste: Paste, key: Optional[str]):
     if key == os.environ["TOKEN"]:
         return True
-    
-    if not paste.deletable : return False
+
+    if not paste.deletable:
+        return False
 
     if not paste.key_hash or not key:
         return False
@@ -54,8 +67,9 @@ def check_delete_access(paste: Paste, key: Optional[str]):
 def check_update_access(paste: Paste, key: Optional[str]):
     if key == os.environ["TOKEN"]:
         return True
-    
-    if not paste.updatable : return False
+
+    if not paste.updatable:
+        return False
 
     if not paste.key_hash or not key:
         return False

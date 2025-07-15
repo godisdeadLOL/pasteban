@@ -1,21 +1,19 @@
-import { Box, Button, CloseButton, Dialog, Flex, Portal, Stack, Wrap } from "@chakra-ui/react"
-import { LuCopy, LuDownload, LuPen, LuShare, LuTrash } from "react-icons/lu"
+import { Box, Button, CloseButton, Dialog, Flex, Group, Portal, Wrap } from "@chakra-ui/react"
+import { LuCopy, LuDownload, LuShare, LuTimer } from "react-icons/lu"
 import { useColorModeValue } from "@/components/ui/color-mode"
-import { CodeBlock, tomorrow, tomorrowNightBright } from "react-code-blocks"
+import { CodeBlock, dracula, tomorrow, tomorrowNightBright } from "react-code-blocks"
 import { AdaptiveButton, AdaptiveLinkButton } from "@/components/AdaptiveButton"
 import { useNavigate, useParams } from "react-router"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { PasteHeader } from "@/components/PasteHeader"
-import { PendingStatus } from "@/components/PendingStatus"
 import { PasswordInput } from "@/components/ui/password-input"
 import { useEffect, useState } from "preact/hooks"
-import { copyToClipboard, encodeBase64 } from "@/utils"
+import { copyToClipboard, encodeBase64, formatTimeUntil } from "@/utils"
 import { PastePublic } from "@/schemas"
 import { PasteShowSkeleton } from "@/pages/PasteShow/PasteShowSkeleton"
 import { useLocalStorage } from "@/hooks/useLocalStorage"
-import { PasteDeleteDialog } from "@/pages/PasteDeleteDialog"
 import { usePasteAccessKey } from "@/hooks/usePasteAccessKey"
-import { PasteUpdateDialog } from "@/pages/PasteUpdateDialog"
+import { PasteActions } from "@/pages/PasteShow/PasteActions"
 
 const KeyDialog = ({ open, setOpen, onApply, onCancel }: any) => {
 	const [value, setValue] = useState("")
@@ -74,7 +72,10 @@ export const PasteShow = () => {
 		queryKey: ["paste_show"],
 		queryFn: () =>
 			fetch(`${import.meta.env.VITE_API_URL}/pastes/${url}`, {
-				headers: { Authorization: `Bearer ${encodeBase64(accessKey ?? "")}` },
+				headers: {
+					Authorization: `Bearer ${encodeBase64(accessKey ?? "")}`,
+					"Authorization-Format": "base64"
+				},
 			}).then((res) => {
 				if (res.ok) return res.json()
 				else {
@@ -115,33 +116,35 @@ export const PasteShow = () => {
 			{!data && <PasteShowSkeleton />}
 
 			{data && <>
-				<Flex alignItems={"center"} gap={{ base: 2, sm: 4 }}>
+				<Flex alignItems={"center"} gap={{ base: 2, sm: 4 }} mb={4}>
 					<PasteHeader pasteData={data} />
 
 					<Box mx="auto" />
 
 					{/* Действия */}
 					<Wrap justifyContent="right">
-						{accessKey && data.deletable && <PasteDeleteDialog pasteData={data}>
-							<AdaptiveButton colorPalette="red" label="Удалить" icon={<LuTrash />} />
-						</PasteDeleteDialog>}
-
-						{accessKey && data.updatable && <PasteUpdateDialog pasteData={data}>
-							<AdaptiveButton label="Редактировать" icon={<LuPen />} />
-						</PasteUpdateDialog>}
-
 						<AdaptiveButton onClick={() => copyToClipboard(document.URL, "Ссылка скопирована")} label="Поделиться" icon={<LuShare />} />
 						<AdaptiveButton onClick={() => copyToClipboard(data.content, "Текст скопирован")} icon={<LuCopy />} label="Копировать" />
 						<AdaptiveLinkButton download={`${data.title}.txt`} href={generateFileBlobUrl(data.content)} icon={<LuDownload />} label="Скачать" />
+
+						{accessKey && <PasteActions pasteData={data} />}
 					</Wrap>
 				</Flex>
 
-				<Box fontFamily={"monospace"} mt={4}>
+				{data.expiration && <Group color={"GrayText"} mb={4} mt={-2}>
+					<LuTimer />
+					<Box textWrap="nowrap" fontSize={"sm"}>
+						Удаление через {formatTimeUntil(data.expiration)}
+					</Box>
+				</Group>}
+
+				<Box fontFamily={"monospace"}>
 					<CodeBlock
 						customStyle={{ borderWidth: "1px", borderColor: "border", borderStyle: "solid" }}
 						theme={useColorModeValue(tomorrow, tomorrowNightBright)}
 						text={data.content}
 						showLineNumbers={true}
+						language={data.language}
 					/>
 				</Box>
 			</>}

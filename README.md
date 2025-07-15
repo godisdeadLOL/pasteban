@@ -1,5 +1,5 @@
 # PasteBan
-Простой клон [Pastebin.com](https://pastebin.com). 
+Простой клон [pastebin.com](https://pastebin.com). 
 
 ***
 
@@ -10,7 +10,8 @@
 
 - 🔓 Публичные и приватные файлы
 - 🔗 Доступ по прямой ссылке
-- 📜 Поддержка синтаксической подсветки (todo)
+- 📜 Подсветка синтаксиса
+- ⏰ Срок удаления файлов
 
 ## 🛠 Стек технологий
 
@@ -25,9 +26,9 @@
 ### Бэкенд
 
 - [Python]()
-- [FastAPI](https://fastapi.tiangolo.com/) — бекенд Python-фреймворк
+- [FastAPI](https://fastapi.tiangolo.com/) — бекенд фреймворк
 - [SQLModel](https://sqlmodel.tiangolo.com/) — ORM на базе SQLAlchemy и Pydantic
 
 
 ## 🔐 API
-🔗 [Открыть Swagger](https://godisdeadlol.github.io/pasteban)
+🔗 [Открыть Swagger](https://testfull-of-test.space/pasteban/docs)

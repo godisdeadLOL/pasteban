@@ -1,5 +1,5 @@
 import os
-from fastapi import Depends
+from fastapi import Depends, Header
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 import requests
 
@@ -18,9 +18,14 @@ def validate_captcha(captcha: str) -> bool:
 security = HTTPBearer(auto_error=False)
 
 
-def get_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    if not credentials : return None
-    
-    token = decode_base64(credentials.credentials)
-    
+def get_token(
+    authorization_format=Header(default=None), credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    if not credentials:
+        return None
+
+    if authorization_format == "base64":
+        token = decode_base64(credentials.credentials)
+    else : token = credentials.credentials
+
     return token or None

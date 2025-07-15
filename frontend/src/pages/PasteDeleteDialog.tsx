@@ -4,19 +4,28 @@ import { PasteOverview, PastePublic } from "@/schemas"
 import { displayToasterMessage, encodeBase64, handleResponse } from "@/utils"
 import { Button, CloseButton, Dialog, Kbd } from "@chakra-ui/react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { Dispatch, StateUpdater, useState } from "preact/hooks"
 import { useNavigate } from "react-router"
 
 type PasteDeleteDialogProps = {
     pasteData: PastePublic | PasteOverview
-    children: any
+    children?: any
+
+    open?: boolean
+    setOpen?: Dispatch<StateUpdater<boolean>>
 }
 
-export const PasteDeleteDialog = ({ pasteData, children }: PasteDeleteDialogProps) => {
-    const accessKey = usePasteAccessKey(pasteData.url)
+export const PasteDeleteDialog = ({ pasteData, open: controlledOpen = undefined, setOpen: setControlledOpen = undefined, children = undefined }: PasteDeleteDialogProps) => {
+    const [internalOpen, setInternalOpen] = useState(false)
+    const isControlled = controlledOpen !== undefined || setControlledOpen !== undefined
 
-    const queryClient = useQueryClient()
+    const open = isControlled ? controlledOpen! : internalOpen
+    const setOpen = isControlled ? setControlledOpen! : setInternalOpen
+
+    const accessKey = usePasteAccessKey(pasteData.url)
     const navigate = useNavigate()
 
+    const queryClient = useQueryClient()
     const mutation = useMutation({
         onMutate: () => {
             displayToasterMessage("Удаление файла...", "info")
@@ -26,6 +35,7 @@ export const PasteDeleteDialog = ({ pasteData, children }: PasteDeleteDialogProp
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${encodeBase64(accessKey ?? "")}`,
+                    "Authorization-Format": "base64"
                 },
             }).then((res) => handleResponse(res))
         },
@@ -41,8 +51,8 @@ export const PasteDeleteDialog = ({ pasteData, children }: PasteDeleteDialogProp
 
     const pending = mutation.isPending
 
-    return <Dialog.Root unmountOnExit={true} lazyMount={true}>
-        <Dialog.Trigger asChild>{children}</Dialog.Trigger>
+    return <Dialog.Root unmountOnExit={true} lazyMount={true} open={open} onOpenChange={(details) => setOpen(details.open)}>
+        {children && <Dialog.Trigger asChild>{children}</Dialog.Trigger>}
 
         <Dialog.Backdrop />
 

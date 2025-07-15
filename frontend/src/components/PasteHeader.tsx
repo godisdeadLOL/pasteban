@@ -1,8 +1,8 @@
 import { usePasteAccessKey } from "@/hooks/usePasteAccessKey"
 import { PasteOverview, PastePublic } from "@/schemas"
-import { copyToClipboard, formatDateTime } from "@/utils"
+import { copyToClipboard, formatTimeAgo } from "@/utils"
 import { Box, Stack, Text, Group, IconButton, HStack, Link, Skeleton } from "@chakra-ui/react"
-import { LuCopy, LuClock, LuShield, LuKey } from "react-icons/lu"
+import { LuCopy, LuClock, LuShield, LuKey, LuTimer } from "react-icons/lu"
 import { useNavigate } from "react-router"
 
 export const PasteHeaderSkeleton = () => {
@@ -31,7 +31,7 @@ export const PasteHeader = ({ pasteData }: PasteHeaderProps) => {
 			<Stack direction={{ base: "column", sm: "row" }} gap={{ base: 0, sm: 4 }} alignItems={{ base: "start", sm: "center" }}>
 				<Group>
 					<Link onClick={() => navigate(`/${pasteData.url}`)}> {pasteData.title} </Link>
-					{pasteData.is_protected && accessKey ? <LuKey /> : <LuShield />}
+					{pasteData.is_protected && (accessKey ? <LuKey /> : <LuShield />)}
 				</Group>
 
 				<Group gap={1}>
@@ -44,14 +44,13 @@ export const PasteHeader = ({ pasteData }: PasteHeaderProps) => {
 				</Group>
 			</Stack>
 
-			<HStack gap={2}>
-				<Group>
-					<LuClock color={"GrayText"} />
-					<Box textWrap="nowrap" color={"GrayText"} fontSize={"sm"}>
-						{formatDateTime(pasteData.created_at)}
-					</Box>
-				</Group>
-			</HStack>
+			<Group>
+				<LuClock color={"GrayText"} />
+				<Box textWrap="nowrap" color={"GrayText"} fontSize={"sm"}>
+					{formatTimeAgo(pasteData.created_at)}
+				</Box>
+			</Group>
+
 		</Stack>
 	)
 }

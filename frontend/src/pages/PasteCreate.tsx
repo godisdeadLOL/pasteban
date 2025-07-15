@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, Field, Fieldset, Group, Heading, Input, Stack, Switch, Textarea } from "@chakra-ui/react"
+import { Box, Button, Checkbox, Field, Fieldset, Group, Heading, Input, NativeSelect, Stack, Switch, Textarea } from "@chakra-ui/react"
 import { PasswordInput } from "@/components/ui/password-input"
 import { useForm } from "react-hook-form"
 import { PasteCreateRequest, PastePublic } from "@/schemas"
@@ -6,13 +6,16 @@ import { useMutation } from "@tanstack/react-query"
 import { useNavigate } from "react-router"
 
 import ReCAPTCHA from "react-google-recaptcha"
-import { useEffect, useState } from "preact/hooks"
+import { useEffect, useRef, useState } from "preact/hooks"
 import { displayToasterMessage, handleResponse } from "@/utils"
 import { contentOptions, keyOptions, titleOptions } from "@/formOptions"
 import { FormSwitch } from "@/components/FormSwitch"
+import { durations, languages } from "@/options"
 
 export const PasteCreate = () => {
 	useEffect(() => { document.title = "Создание файла" }, [])
+
+	const captchaRef = useRef<any>()
 
 	const { register, handleSubmit, watch, formState: { errors }, control } = useForm<PasteCreateRequest>(
 		{ defaultValues: { updatable: true, deletable: true } }
@@ -29,7 +32,8 @@ export const PasteCreate = () => {
 				body: JSON.stringify(data),
 				headers: {
 					"Content-Type": "application/json",
-					Captcha: captcha ?? "",
+					"Captcha": captcha ?? "",
+					"Authorization-Format": "base64"
 				},
 			}).then((res) => handleResponse(res))
 		},
@@ -47,6 +51,7 @@ export const PasteCreate = () => {
 
 		onSettled: () => {
 			setCaptcha(null)
+			captchaRef.current.reset()
 		},
 	})
 
@@ -80,6 +85,29 @@ export const PasteCreate = () => {
 					<Field.ErrorText>{errors.content?.message}</Field.ErrorText>
 				</Field.Root>
 
+				<Field.Root disabled={pending}>
+					<Field.Label>Синтаксис</Field.Label>
+
+					<NativeSelect.Root>
+						<NativeSelect.Field {...register("language")}>
+							{languages.map((lang) => <option value={lang}>{lang}</option>)}
+						</NativeSelect.Field>
+						<NativeSelect.Indicator />
+					</NativeSelect.Root>
+				</Field.Root>
+
+				<Field.Root disabled={pending}>
+					<Field.Label>Длительность</Field.Label>
+
+					<NativeSelect.Root>
+						<NativeSelect.Field {...register("duration")}>
+							<option value="">Вечно</option>
+							{durations.map((duration) => <option value={duration.value}>{duration.label}</option>)}
+						</NativeSelect.Field>
+						<NativeSelect.Indicator />
+					</NativeSelect.Root>
+				</Field.Root>
+
 				<Field.Root disabled={pending} invalid={!!errors.key}>
 					<Field.Label>Пароль</Field.Label>
 					<PasswordInput {...register("key", keyOptions)} placeholder={"Без пароля"} />
@@ -91,7 +119,7 @@ export const PasteCreate = () => {
 					<FormSwitch disabled={!key || pending} name="deletable" control={control}>Удаляемый</FormSwitch>
 				</Fieldset.Root>
 
-				<ReCAPTCHA sitekey={import.meta.env.VITE_CATPCHA_SITE_KEY} onChange={setCaptcha} />
+				<ReCAPTCHA ref={captchaRef} sitekey={import.meta.env.VITE_CATPCHA_SITE_KEY} onChange={setCaptcha} />
 
 				<Button loading={pending} disabled={!captcha} mt={8} type="submit" variant="outline">
 					Создать
