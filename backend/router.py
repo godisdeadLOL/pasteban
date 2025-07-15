@@ -21,7 +21,8 @@ from utils import (
 router = APIRouter()
 
 expiration_check = or_(
-    Paste.duration == None, func.unixepoch(func.now()) - func.unixepoch(Paste.created_at) < Paste.duration
+    Paste.duration == None,
+    func.strftime("%s", "now") - func.strftime("%s", Paste.created_at) < Paste.duration,
 )
 
 

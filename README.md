@@ -26,9 +26,9 @@
 ### Бэкенд
 
 - [Python]()
-- [FastAPI](https://fastapi.tiangolo.com/) — бекенд фреймворк
+- [FastAPI](https://fastapi.tiangolo.com/) — бекенд-фреймворк
 - [SQLModel](https://sqlmodel.tiangolo.com/) — ORM на базе SQLAlchemy и Pydantic
 
 
 ## 🔐 API
-🔗 [Открыть Swagger](https://testfull-of-test.space/pasteban/docs)
+🔗 [Открыть swagger](https://testfull-of-test.space/pasteban/docs)
