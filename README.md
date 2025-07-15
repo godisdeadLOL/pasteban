@@ -6,28 +6,28 @@
 ## 🚀 Демо
 🔗 [Открыть сайт](https://godisdeadlol.github.io/pasteban)
 
-## ✨ Возможности
+## ✨ Функционал
 
 - 🔓 Публичные и приватные файлы
 - 🔗 Доступ по прямой ссылке
 - 📜 Подсветка синтаксиса
 - ⏰ Срок удаления файлов
 
-## 🛠 Стек технологий
+## 🛠 Технологии
 
 ### Фронтенд
 
-- [TypeScript](https://www.typescriptlang.org/)
-- [Preact](https://preactjs.com/)
-- [Chakra UI](https://chakra-ui.com/) — UI-фреймворк
-- [React Router](https://reactrouter.com/) — маршрутизация
-- [React Query](https://tanstack.com/query) — управление состоянием запросов
+- **TypeScript**
+- **Preact**
+- **Chakra UI** - UI-фреймворк
+- **React Router** - маршрутизация
+- **React Query** - управление состоянием запросов
 
 ### Бэкенд
 
-- [Python]()
-- [FastAPI](https://fastapi.tiangolo.com/) — бекенд-фреймворк
-- [SQLModel](https://sqlmodel.tiangolo.com/) — ORM на базе SQLAlchemy и Pydantic
+- **Python**
+- **FastAPI** - фреймворк для разработки API
+- **SQLModel** - ORM на базе SQLAlchemy и Pydantic
 
 
 ## 🔐 API
