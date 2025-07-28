@@ -111,8 +111,8 @@ def update(
     for key, value in iter(paste_update):
         setattr(paste, key, value)
 
-    if paste_update.content:
-        paste.query = generate_query(paste_update.content)
+    if paste_update.title:
+        paste.query = generate_query(paste_update.title)
 
     session.add(paste)
     session.commit()
