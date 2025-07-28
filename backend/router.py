@@ -40,9 +40,7 @@ def list(query: str = "", session: Session = Depends(get_session)):
 
 @router.get("/{url}", response_model=PastePublic)
 def get(url: str, token: str = Depends(get_token), session: Session = Depends(get_session)):
-    paste: Optional[Paste] = session.exec(
-        select(Paste).where(expiration_check).where(Paste.url == url)
-    ).one_or_none()
+    paste: Optional[Paste] = session.exec(select(Paste).where(expiration_check).where(Paste.url == url)).one_or_none()
 
     if paste is None:
         raise HTTPException(404)
@@ -64,11 +62,7 @@ def create(create_request: PasteCreate, captcha: str = Header(), session: Sessio
 
     paste = Paste(
         **fields,
-        key_hash=(
-            generate_hash(create_request.key)
-            if (create_request.key is not None and len(create_request.key) > 0)
-            else None
-        ),
+        key_hash=(generate_hash(create_request.key) if (create_request.key is not None and len(create_request.key) > 0) else None),
         query=generate_query(create_request.title),
         duration=parse_duration(create_request.duration) if create_request.duration else None,
     )
@@ -87,9 +81,7 @@ def create(create_request: PasteCreate, captcha: str = Header(), session: Sessio
 
 @router.delete("/{url}")
 def delete(url: str, token: str = Depends(get_token), session: Session = Depends(get_session)):
-    paste: Optional[Paste] = session.exec(
-        select(Paste).where(expiration_check).where(Paste.url == url)
-    ).one_or_none()
+    paste: Optional[Paste] = session.exec(select(Paste).where(expiration_check).where(Paste.url == url)).one_or_none()
 
     if not paste:
         raise HTTPException(404)
@@ -108,9 +100,7 @@ def update(
     token: str = Depends(get_token),
     session: Session = Depends(get_session),
 ):
-    paste: Optional[Paste] = session.exec(
-        select(Paste).where(expiration_check).where(Paste.url == url)
-    ).one_or_none()
+    paste: Optional[Paste] = session.exec(select(Paste).where(expiration_check).where(Paste.url == url)).one_or_none()
 
     if not paste:
         raise HTTPException(404)
@@ -120,6 +110,9 @@ def update(
 
     for key, value in iter(paste_update):
         setattr(paste, key, value)
+
+    if paste_update.content:
+        paste.query = generate_query(paste_update.content)
 
     session.add(paste)
     session.commit()
